@@ -13,15 +13,32 @@ std::ostream& operator<<(std::ostream& os, const def::Color& c) {
 }
 
 int main() {
-    std::cout << "Hello, "
-              << def::Color::black << " and " << def::Color::white
-              << std::endl;
     MagicFinder mf;
-    auto magic = mf.find_rook_magic({1, 3});
-    if (magic.has_value()) {
-        std::cout << magic.value() << std::endl;
-    } else {
-        std::cout << "No magic today" << std::endl;
+
+    std::cout << "Rook magic\n";
+    for (size_t row = 0; row < def::BOARD_SIZE; ++row) {
+        for (size_t col = 0; col < def::BOARD_SIZE; ++col) {
+            auto magic = mf.find_rook_magic({1, 3});
+            std::cout << "row " << row << " col " << col << ": ";
+            if (magic.has_value()) {
+                std::cout << "0x" << std::hex << magic.value() << '\n';
+            } else {
+                std::cout << "No magic today" << '\n';
+            }
+        }
+    }
+
+    std::cout << "\nBishop magic\n";
+    for (size_t row = 0; row < def::BOARD_SIZE; ++row) {
+        for (size_t col = 0; col < def::BOARD_SIZE; ++col) {
+            auto magic = mf.find_bishop_magic({1, 3});
+            std::cout << "row " << row << " col " << col << ": ";
+            if (magic.has_value()) {
+                std::cout << "0x" << std::hex << magic.value() << '\n';
+            } else {
+                std::cout << "No magic today" << '\n';
+            }
+        }
     }
 
     return 0;

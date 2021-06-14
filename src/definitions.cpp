@@ -48,33 +48,33 @@ class Square {
             return m_row == 0u || m_row == BOARD_SIZE - 1 || m_col == 0u || m_col == BOARD_SIZE - 1;
         }
 
-        // std::vector<Square> left_neibs() const {
-        //     std::vector<Square> vec;
-        //     for (uint8_t col = m_col - 1; col < BOARD_SIZE; --col) 
-        //         vec.push_back({m_row, col});
-        //     return vec;
-        // }
+        std::vector<Square> left_neibs() const {
+            std::vector<Square> vec;
+            for (uint8_t col = m_col - 1; col < BOARD_SIZE; --col) 
+                vec.push_back({m_row, col});
+            return vec;
+        }
 
-        // std::vector<Square> top_neibs() const {
-        //     std::vector<Square> vec;
-        //     for (uint8_t row = m_row + 1; row < BOARD_SIZE; ++row) 
-        //         vec.push_back({row, m_col});
-        //     return vec;
-        // }
+        std::vector<Square> top_neibs() const {
+            std::vector<Square> vec;
+            for (uint8_t row = m_row + 1; row < BOARD_SIZE; ++row) 
+                vec.push_back({row, m_col});
+            return vec;
+        }
 
-        // std::vector<Square> bottom_neibs() const {
-        //     std::vector<Square> vec;
-        //     for (uint8_t row = m_row - 1; row < BOARD_SIZE; --row) 
-        //         vec.push_back({row, m_col});
-        //     return vec;
-        // }
+        std::vector<Square> bottom_neibs() const {
+            std::vector<Square> vec;
+            for (uint8_t row = m_row - 1; row < BOARD_SIZE; --row) 
+                vec.push_back({row, m_col});
+            return vec;
+        }
 
-        // std::vector<Square> right_neibs() const {
-        //     std::vector<Square> vec;
-        //     for (uint8_t col = m_col + 1; col < BOARD_SIZE; ++col) 
-        //         vec.push_back({m_row, col});
-        //     return vec;
-        // }
+        std::vector<Square> right_neibs() const {
+            std::vector<Square> vec;
+            for (uint8_t col = m_col + 1; col < BOARD_SIZE; ++col) 
+                vec.push_back({m_row, col});
+            return vec;
+        }
 
         std::vector<Square> top_right_neibs() const {
             std::vector<Square> vec;

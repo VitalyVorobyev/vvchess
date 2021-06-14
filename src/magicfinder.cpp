@@ -38,49 +38,58 @@ Bitboard bishop_mask(Square s) {
 
 Bitboard rook_mask(Square s) {
     Bitboard result = 0;
-    for (size_t index = s.index() + 8; valid_index(index); index += 8) result |= (Bitboard(1) << index);
-    for (size_t index = s.index() - 8; valid_index(index); index -= 8) result |= (Bitboard(1) << index);
-    for (size_t idx = 0; idx < 8; ++idx) if (idx != s.col()) {
-        result |= (Bitboard(1) << (s.index() - s.col() + idx));
-    }
-    return result & Bitboard(0x7e7e7e7e7e7e00);
+
+    auto updater = [&result](const std::vector<Square>& neibs) {
+        if (neibs.empty()) return;
+        std::for_each(neibs.begin(), neibs.end() - 1, [&result](const Square& sq) {
+            result |= (Bitboard(1) << sq.index());
+        });
+    };
+
+    updater(s.left_neibs());
+    updater(s.right_neibs());
+    updater(s.top_neibs());
+    updater(s.bottom_neibs());
+
+    return result;
 }
 
 Bitboard rook_attacks(Square s, Bitboard block) {
     Bitboard result = 0;
-    
-    for (int delta : {8, -8}) {
-        for (int index = s.index() + delta; valid_index(index); index += delta) {
-            result += (Bitboard(1) << index);
-            if (block & (Bitboard(1) << index)) break;
+
+    auto updater = [&result, block](const std::vector<Square>& neibs) {
+        for (auto it = neibs.begin(); it != neibs.end(); ++it) {
+            Bitboard bb = Bitboard(1) << it->index();
+            result |= bb;
+            if (block & bb) break;
         }
-    }
+    };
 
-    const int index0 = s.index() - s.col();
-    for (int idx = s.col() + 1; idx < 8; ++idx) {
-        result |= (Bitboard(1) << (index0 + idx));
-        if (block & (Bitboard(1) << (index0 + idx))) break;
-    }
-
-    for (int idx = s.col() - 1; idx >= 0; --idx) {
-        result |= (Bitboard(1) << (index0 + idx));
-        if (block & (Bitboard(1) << (index0 + idx))) break;
-    }
-
-    return result & Bitboard(0x7e7e7e7e7e7e00);
+    updater(s.left_neibs());
+    updater(s.right_neibs());
+    updater(s.top_neibs());
+    updater(s.bottom_neibs());
+    
+    return result;
 }
 
 Bitboard bishop_attacks(Square s, Bitboard block) {
     Bitboard result = 0;
 
-    for (int delta : {7, 9, -7, -9}) {
-        for (int index = s.index() + delta; valid_index(index); index += delta) {
-            result += (Bitboard(1) << index);
-            if (block & (Bitboard(1) << index)) break;
+    auto updater = [&result, block](const std::vector<Square>& neibs) {
+        for (auto it = neibs.begin(); it != neibs.end(); ++it) {
+            Bitboard bb = Bitboard(1) << it->index();
+            result |= bb;
+            if (block & bb) break;
         }
-    }
+    };
+
+    updater(s.top_right_neibs());
+    updater(s.top_left_neibs());
+    updater(s.bottom_left_neibs());
+    updater(s.bottom_right_neibs());
     
-    return result & Bitboard(0x7e7e7e7e7e7e00);
+    return result;
 }
 
 size_t count_ones(Bitboard b) {
