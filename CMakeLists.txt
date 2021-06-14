@@ -16,3 +16,13 @@ add_executable(vvchess
 )
 
 target_include_directories(vvchess PUBLIC src)
+
+enable_testing()
+
+add_executable(test_pop_first_one
+    src/definitions.cpp
+    src/magicfinder.cpp
+    test/test_pop_first_one.cpp
+)
+
+add_test(test_pop_first_one ./test_pop_first_one)

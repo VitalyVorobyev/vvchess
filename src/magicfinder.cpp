@@ -112,11 +112,11 @@ constexpr std::array<int, 64> BitTable = {
     58, 20, 37, 17, 36, 8
 };
 
-int pop_first_bit(Bitboard &b) {
+export int pop_first_bit(Bitboard &b) {
     const Bitboard bb = b ^ (b - 1);
     b &= (b - 1);
-    uint32_t fold = static_cast<uint32_t>((bb & 0xffffffff) ^ (bb >> 32));
-    // unsigned int fold = (unsigned) ((bb & 0xffffffff) ^ (bb >> 32));
+    // uint32_t fold = static_cast<uint32_t>((bb & 0xffffffff) ^ (bb >> 32));
+    unsigned int fold = (unsigned) ((bb & 0xffffffff) ^ (bb >> 32));
     return BitTable.at((fold * 0x783a9b23) >> 26);
     // return BitTable[(fold * 0x783a9b23) >> 26];  // WTF?
 }
