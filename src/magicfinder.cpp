@@ -7,6 +7,7 @@ module;
 #include <optional>
 #include <numeric>
 #include <functional>
+#include <iostream>
 
 import definitions;
 export module magicfinder;
@@ -14,30 +15,38 @@ export module magicfinder;
 using def::Bitboard;
 using def::Square;
 
-namespace findmagic {
+export namespace findmagic {
 
-bool valid_index(int index) { return index >= 0 && index < 64;}
+bool valid_index(size_t index) { return index < 64;}
 
 Bitboard bishop_mask(Square s) {
-    Bitboard result = 0;
-    for (int delta : {7, 9, -7, -9}) {
-        for (int index = s.index() + delta; valid_index(index); index += delta)
-            result |= (Bitboard(1) << index);
-    }
+    Bitboard result(0);
+    auto updater = [&result](const std::vector<Square>& neibs) {
+        if (neibs.empty()) return;
+        std::for_each(neibs.begin(), neibs.end() - 1, [&result](const Square& sq) {
+            result |= (Bitboard(1) << sq.index());
+        });
+    };
+
+    updater(s.top_right_neibs());
+    updater(s.top_left_neibs());
+    updater(s.bottom_left_neibs());
+    updater(s.bottom_right_neibs());
+
     return result;
 }
 
 Bitboard rook_mask(Square s) {
     Bitboard result = 0;
-    for (int index = s.index() + 8; index < 64; index += 8) result |= (Bitboard(1) << index);
-    for (int index = s.index() - 8; index >= 0; index -= 8) result |= (Bitboard(1) << index);
-    for (int idx = 0; idx < 8; ++idx) if (idx != s.col()) {
+    for (size_t index = s.index() + 8; valid_index(index); index += 8) result |= (Bitboard(1) << index);
+    for (size_t index = s.index() - 8; valid_index(index); index -= 8) result |= (Bitboard(1) << index);
+    for (size_t idx = 0; idx < 8; ++idx) if (idx != s.col()) {
         result |= (Bitboard(1) << (s.index() - s.col() + idx));
     }
-    return result;
+    return result & Bitboard(0x7e7e7e7e7e7e00);
 }
 
-Bitboard rook_att(Square s, Bitboard block) {
+Bitboard rook_attacks(Square s, Bitboard block) {
     Bitboard result = 0;
     
     for (int delta : {8, -8}) {
@@ -58,10 +67,10 @@ Bitboard rook_att(Square s, Bitboard block) {
         if (block & (Bitboard(1) << (index0 + idx))) break;
     }
 
-    return result;
+    return result & Bitboard(0x7e7e7e7e7e7e00);
 }
 
-Bitboard bishop_att(Square s, Bitboard block) {
+Bitboard bishop_attacks(Square s, Bitboard block) {
     Bitboard result = 0;
 
     for (int delta : {7, 9, -7, -9}) {
@@ -71,10 +80,10 @@ Bitboard bishop_att(Square s, Bitboard block) {
         }
     }
     
-    return result;
+    return result & Bitboard(0x7e7e7e7e7e7e00);
 }
 
-export size_t count_ones(Bitboard b) {
+size_t count_ones(Bitboard b) {
     size_t r = 0;
     while (b) {
         b &= b - 1;
@@ -106,13 +115,17 @@ constexpr std::array<int, 64> bishop_bits = {
 };
 
 constexpr std::array<int, 64> BitTable = {
-    63, 30, 3, 32, 25, 41, 22, 33, 15, 50, 42, 13, 11, 53, 19, 34, 61, 29, 2,
-    51, 21, 43, 45, 10, 18, 47, 1, 54, 9, 57, 0, 35, 62, 31, 40, 4, 49, 5, 52,
-    26, 60, 6, 23, 44, 46, 27, 56, 16, 7, 39, 48, 24, 59, 14, 12, 55, 38, 28,
-    58, 20, 37, 17, 36, 8
+    63, 30,  3, 32, 25, 41, 22, 33,
+    15, 50, 42, 13, 11, 53, 19, 34,
+    61, 29,  2, 51, 21, 43, 45, 10,
+    18, 47,  1, 54,  9, 57,  0, 35,
+    62, 31, 40,  4, 49,  5, 52, 26,
+    60,  6, 23, 44, 46, 27, 56, 16,
+     7, 39, 48, 24, 59, 14, 12, 55,
+    38, 28, 58, 20, 37, 17, 36,  8
 };
 
-export size_t pop_first_bit(Bitboard &b) {
+size_t pop_first_bit(Bitboard &b) {
     const Bitboard bb = b ^ (b - 1);
     b &= (b - 1);
     uint32_t fold = static_cast<uint32_t>((bb & 0xffffffff) ^ (bb >> 32));
@@ -150,7 +163,7 @@ int magic_trick(Bitboard b, Bitboard magic, int bits) {
     return static_cast<int>((b * magic) >> (64 - bits));
 }
 
-export class MagicFinder {
+class MagicFinder {
     RandomBitboard m_rndm_bb;
     static constexpr size_t m_max_iter = 1e7;
     
@@ -197,12 +210,12 @@ export class MagicFinder {
 
     std::optional<Bitboard> find_rook_magic(Square s) {
         return find_magic(rook_mask(s), rook_bits.at(s.index()),
-            [s](Bitboard x) {return rook_att(s, x);});
+            [s](Bitboard x) {return rook_attacks(s, x);});
     }
 
     std::optional<Bitboard> find_bishop_magic(Square s) {
         return find_magic(bishop_mask(s), bishop_bits.at(s.index()),
-            [s](Bitboard x) {return bishop_att(s, x);});
+            [s](Bitboard x) {return bishop_attacks(s, x);});
     }
 };
 

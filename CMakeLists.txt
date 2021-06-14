@@ -31,5 +31,13 @@ add_executable(test_count_ones
     test/test_count_ones.cpp
 )
 
+add_executable(test_bishop_mask
+    src/definitions.cpp
+    src/magicfinder.cpp
+    test/test_bishop_mask.cpp
+)
+
 add_test(test_pop_first_one ./test_pop_first_one)
 add_test(test_count_ones ./test_count_ones)
+add_test(test_bishop_mask ./test_bishop_mask)
+
