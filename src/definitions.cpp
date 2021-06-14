@@ -5,7 +5,7 @@ export module definitions;
 
 export namespace def {
     enum class Color {white, black};
-    enum class Piece {pawn, bishop, knoght, rook, queen, kind};
+    enum class Piece {pawn, bishop, knight, rook, queen, king};
     using Bitboard = uint64_t;
     
     class Square {
