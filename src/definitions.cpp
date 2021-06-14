@@ -5,8 +5,8 @@ export module definitions;
 
 export namespace def {
 
-constexpr extern int BOARD_SIZE = 8;
-constexpr extern int TOTAL_SQUARES = BOARD_SIZE * BOARD_SIZE;
+constexpr extern size_t BOARD_SIZE = 8;
+constexpr extern size_t TOTAL_SQUARES = BOARD_SIZE * BOARD_SIZE;
 
 enum class Color {white, black};
 enum class Piece {pawn, bishop, knight, rook, queen, king};

@@ -25,4 +25,11 @@ add_executable(test_pop_first_one
     test/test_pop_first_one.cpp
 )
 
+add_executable(test_count_ones
+    src/definitions.cpp
+    src/magicfinder.cpp
+    test/test_count_ones.cpp
+)
+
 add_test(test_pop_first_one ./test_pop_first_one)
+add_test(test_count_ones ./test_count_ones)

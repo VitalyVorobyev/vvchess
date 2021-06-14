@@ -74,7 +74,7 @@ Bitboard bishop_att(Square s, Bitboard block) {
     return result;
 }
 
-size_t count_ones(Bitboard b) {
+export size_t count_ones(Bitboard b) {
     size_t r = 0;
     while (b) {
         b &= b - 1;
@@ -112,19 +112,17 @@ constexpr std::array<int, 64> BitTable = {
     58, 20, 37, 17, 36, 8
 };
 
-export int pop_first_bit(Bitboard &b) {
+export size_t pop_first_bit(Bitboard &b) {
     const Bitboard bb = b ^ (b - 1);
     b &= (b - 1);
-    // uint32_t fold = static_cast<uint32_t>((bb & 0xffffffff) ^ (bb >> 32));
-    unsigned int fold = (unsigned) ((bb & 0xffffffff) ^ (bb >> 32));
+    uint32_t fold = static_cast<uint32_t>((bb & 0xffffffff) ^ (bb >> 32));
     return BitTable.at((fold * 0x783a9b23) >> 26);
-    // return BitTable[(fold * 0x783a9b23) >> 26];  // WTF?
 }
 
-Bitboard index_to_bitboard(int index, int bits, Bitboard b) {
+Bitboard index_to_bitboard(size_t index, size_t bits, Bitboard b) {
     Bitboard result = 0;
-    for(int i = 0; i < bits; ++i) {
-        int j = pop_first_bit(b);
+    for(size_t i = 0; i < bits; ++i) {
+        size_t j = pop_first_bit(b);
         if (index & (1 << i)) result |= (Bitboard(1) << j);
     }
     return result;
@@ -158,7 +156,7 @@ export class MagicFinder {
     
     using BitboardTransformer = std::function<Bitboard(Bitboard)>;
 
-    std::optional<Bitboard> find_magic(Bitboard mask, int m, BitboardTransformer fcn) {
+    std::optional<Bitboard> find_magic(Bitboard mask, size_t bits, BitboardTransformer fcn) {
         const size_t nones = count_ones(mask);
         const size_t size = (1 << nones);
 
@@ -180,7 +178,7 @@ export class MagicFinder {
 
             bool success = true;
             for (size_t idx = 0; idx < a.size(); ++idx) {
-                int j = magic_trick(b[idx], magic, m);
+                int j = magic_trick(b[idx], magic, bits);
                 if (used[j] == 0) used[j] = a[idx];
                 else if (used[j] != a[idx]) {
                     success = false;
