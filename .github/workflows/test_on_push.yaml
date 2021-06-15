@@ -1,0 +1,16 @@
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+    - name: Config
+      run: sudo apt install gcc-11 g++-11
+    - name: Build
+      run: mkdir build && cd build && cmake .. && cmaks --build .
+      env:
+       CC: gcc-11
+       CXX: g++-11
+    - name: Run tests
+      run: cd build && ctest --verbose
