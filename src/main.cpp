@@ -30,7 +30,7 @@ void print_if_has_value(std::ostream& os, size_t row, size_t col, std::optional<
 }
 
 int main() {
-    MagicFinder mf;
+    MagicFinder mf(99);
 
     std::cout << "Rook magic\n";
     for_each_square([&mf](size_t row, size_t col) {

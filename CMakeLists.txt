@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-set(cmake_cxx_standard 20)
-set(cmake_cxx_standard_required True)
-
-add_compile_options(-Wall -Wextra -pedantic -Werror -fmodules-ts)
+add_compile_options(-O2 -Wall -Wextra -pedantic -Werror -fmodules-ts)
 
 project(vvchess VERSION 0.1)
 

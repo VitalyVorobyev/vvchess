@@ -214,7 +214,7 @@ class MagicFinder {
     }
 
  public:
-    MagicFinder() : m_rndm_bb(std::random_device()()) {}
+    MagicFinder() : m_rndm_bb(std::random_device("mt19937")()) {}
     MagicFinder(size_t seed) : m_rndm_bb(seed) {}
 
     std::optional<Bitboard> find_rook_magic(Square s) {
