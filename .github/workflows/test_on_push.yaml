@@ -6,9 +6,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Config
-      run: sudo apt install gcc-11 g++-11
+      run: sudo apt install gcc-11 g++-11 cmake
     - name: Build
-      run: mkdir build && cd build && cmake .. && cmaks --build .
+      run: mkdir build && cd build && cmake .. && cmake --build .
       env:
        CC: gcc-11
        CXX: g++-11
