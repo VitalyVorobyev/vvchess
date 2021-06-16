@@ -69,7 +69,7 @@ Bitboard rook_attacks(Square s, Bitboard block) {
     updater(s.right_neibs());
     updater(s.top_neibs());
     updater(s.bottom_neibs());
-    
+
     return result;
 }
 
@@ -101,28 +101,6 @@ size_t count_ones(Bitboard b) {
     return r;
 }
 
-constexpr std::array<int, 64> rook_bits = {
-    12, 11, 11, 11, 11, 11, 11, 12,
-    11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11,
-    11, 10, 10, 10, 10, 10, 10, 11,
-    12, 11, 11, 11, 11, 11, 11, 12
-};
-
-constexpr std::array<int, 64> bishop_bits = {
-    6, 5, 5, 5, 5, 5, 5, 6,
-    5, 5, 5, 5, 5, 5, 5, 5,
-    5, 5, 7, 7, 7, 7, 5, 5,
-    5, 5, 7, 9, 9, 7, 5, 5,
-    5, 5, 7, 9, 9, 7, 5, 5,
-    5, 5, 7, 7, 7, 7, 5, 5,
-    5, 5, 5, 5, 5, 5, 5, 5,
-    6, 5, 5, 5, 5, 5, 5, 6
-};
-
 constexpr std::array<int, 64> BitTable = {
     63, 30,  3, 32, 25, 41, 22, 33,
     15, 50, 42, 13, 11, 53, 19, 34,
@@ -136,7 +114,7 @@ constexpr std::array<int, 64> BitTable = {
 
 size_t pop_first_bit(Bitboard &b) {
     const Bitboard bb = b ^ (b - 1);
-    b &= (b - 1);
+    b &= b - 1;
     uint32_t fold = static_cast<uint32_t>((bb & 0xffffffff) ^ (bb >> 32));
     return BitTable.at((fold * 0x783a9b23) >> 26);
 }
@@ -168,8 +146,8 @@ class RandomBitboard {
     }
 };
 
-int magic_trick(Bitboard b, Bitboard magic, int bits) {
-    return static_cast<int>((b * magic) >> (64 - bits));
+size_t magic_trick(Bitboard b, Bitboard magic, int bits) {
+    return static_cast<size_t>((b * magic) >> (64 - bits));
 }
 
 class MagicFinder {
@@ -178,31 +156,31 @@ class MagicFinder {
     
     using BitboardTransformer = std::function<Bitboard(Bitboard)>;
 
-    std::optional<Bitboard> find_magic(Bitboard mask, size_t bits, BitboardTransformer fcn) {
+    std::optional<Bitboard> find_magic(Bitboard mask, BitboardTransformer fcn) {
         const size_t nones = count_ones(mask);
         const size_t size = (1 << nones);
 
         // Consider changing to std::array<Bitboard, 4096>
         std::vector<int> seed(size);
         std::iota(seed.begin(), seed.end(), 0);
-        std::vector<Bitboard> a(size), b(size);
+        std::vector<Bitboard> attacks(size), blockers(size);
 
-        std::transform(seed.begin(), seed.end(), b.begin(),
+        std::transform(seed.begin(), seed.end(), blockers.begin(),
             [nones, mask](int x) {return index_to_bitboard(x, nones, mask);});
 
-        std::transform(b.begin(), b.end(), a.begin(), fcn);
+        std::transform(blockers.begin(), blockers.end(), attacks.begin(), fcn);
 
         for (size_t iter = 0; iter < m_max_iter; ++iter) {
             Bitboard magic = m_rndm_bb.random_sparse_bitboard();
             const Bitboard folded = (mask * magic) & 0xFF00000000000000ULL;
-            if (count_ones(folded) < 6) continue;
+            if (count_ones(folded) < 6) continue;  // TODO: why 6?
             std::vector<Bitboard> used(size, 0);
 
             bool success = true;
-            for (size_t idx = 0; idx < a.size(); ++idx) {
-                int j = magic_trick(b[idx], magic, bits);
-                if (used[j] == 0) used[j] = a[idx];
-                else if (used[j] != a[idx]) {
+            for (size_t idx = 0; idx < attacks.size(); ++idx) {
+                size_t j = magic_trick(blockers[idx], magic, nones);
+                if (used[j] == 0) used[j] = attacks[idx];
+                else if (used[j] != attacks[idx]) {
                     success = false;
                     break;
                 }
@@ -218,13 +196,11 @@ class MagicFinder {
     MagicFinder(size_t seed) : m_rndm_bb(seed) {}
 
     std::optional<Bitboard> find_rook_magic(Square s) {
-        return find_magic(rook_mask(s), rook_bits.at(s.index()),
-            [s](Bitboard x) {return rook_attacks(s, x);});
+        return find_magic(rook_mask(s), [s](Bitboard x) {return rook_attacks(s, x);});
     }
 
     std::optional<Bitboard> find_bishop_magic(Square s) {
-        return find_magic(bishop_mask(s), bishop_bits.at(s.index()),
-            [s](Bitboard x) {return bishop_attacks(s, x);});
+        return find_magic(bishop_mask(s), [s](Bitboard x) {return bishop_attacks(s, x);});
     }
 };
 
