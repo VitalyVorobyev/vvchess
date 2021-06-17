@@ -1,25 +1,29 @@
-#include "test_runner.h"
+#include "gtest/gtest.h"
+
 import definitions;
 import magicfinder;
 
 using def::Bitboard;
 using findmagic::rook_mask;
+using findmagic::rook_mask_simple;
 
-void test_d4() {ASSERT_EQUAL(Bitboard(   0x8087608080800), rook_mask({4, 3}));}
-void test_e4() {ASSERT_EQUAL(Bitboard(  0x10106e10101000), rook_mask({4, 4}));}
-void test_a8() {ASSERT_EQUAL(Bitboard(0x7e01010101010100), rook_mask({7, 0}));}
-void test_h1() {ASSERT_EQUAL(Bitboard(  0x8080808080807e), rook_mask({0, 7}));}
-void test_a1() {ASSERT_EQUAL(Bitboard(   0x101010101017e), rook_mask({0, 0}));}
-void test_h8() {ASSERT_EQUAL(Bitboard(0x7e80808080808000), rook_mask({7, 7}));}
-void test_g7() {ASSERT_EQUAL(Bitboard(  0x3e404040404000), rook_mask({6, 6}));}
+TEST(RookMask, D4) {ASSERT_EQ(Bitboard(   0x8087608080800), rook_mask({4, 3}));}
+TEST(RookMask, E4) {ASSERT_EQ(Bitboard(  0x10106e10101000), rook_mask({4, 4}));}
+TEST(RookMask, A8) {ASSERT_EQ(Bitboard(0x7e01010101010100), rook_mask({7, 0}));}
+TEST(RookMask, H1) {ASSERT_EQ(Bitboard(  0x8080808080807e), rook_mask({0, 7}));}
+TEST(RookMask, A1) {ASSERT_EQ(Bitboard(   0x101010101017e), rook_mask({0, 0}));}
+TEST(RookMask, H8) {ASSERT_EQ(Bitboard(0x7e80808080808000), rook_mask({7, 7}));}
+TEST(RookMask, G7) {ASSERT_EQ(Bitboard(  0x3e404040404000), rook_mask({6, 6}));}
 
-int main() {
-    TestRunner tr;
-    RUN_TEST(tr, test_d4);
-    RUN_TEST(tr, test_e4);
-    RUN_TEST(tr, test_a8);
-    RUN_TEST(tr, test_a1);
-    RUN_TEST(tr, test_h8);
-    RUN_TEST(tr, test_h1);
-    RUN_TEST(tr, test_g7);
+TEST(RookMaskSimple, D4) {ASSERT_EQ(Bitboard(   0x8087608080800), rook_mask_simple({4, 3}));}
+TEST(RookMaskSimple, E4) {ASSERT_EQ(Bitboard(  0x10106e10101000), rook_mask_simple({4, 4}));}
+TEST(RookMaskSimple, A8) {ASSERT_EQ(Bitboard(0x7e01010101010100), rook_mask_simple({7, 0}));}
+TEST(RookMaskSimple, H1) {ASSERT_EQ(Bitboard(  0x8080808080807e), rook_mask_simple({0, 7}));}
+TEST(RookMaskSimple, A1) {ASSERT_EQ(Bitboard(   0x101010101017e), rook_mask_simple({0, 0}));}
+TEST(RookMaskSimple, H8) {ASSERT_EQ(Bitboard(0x7e80808080808000), rook_mask_simple({7, 7}));}
+TEST(RookMaskSimple, G7) {ASSERT_EQ(Bitboard(  0x3e404040404000), rook_mask_simple({6, 6}));}
+
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
