@@ -243,7 +243,7 @@ size_t magic_trick(Bitboard b, Bitboard magic, int bits) {
 class MagicFinder {
     RandomBitboard m_rndm_bb;
     static constexpr size_t m_max_iter = 1e7;
-    
+
     using BitboardTransformer = std::function<Bitboard(Bitboard)>;
 
     std::optional<Bitboard> find_magic(Bitboard mask, BitboardTransformer fcn) {

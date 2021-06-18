@@ -2,6 +2,8 @@
 #include <iomanip>
 #include <functional>
 #include <optional>
+#include <fstream>
+#include <string>
 
 import definitions;
 import magicfinder;
@@ -22,7 +24,7 @@ void for_each_square(std::function<void(Size, Size)> cb) {
 }
 
 void print_if_has_value(std::ostream& os, size_t row, size_t col, std::optional<Bitboard>& magic) {
-    os << "row " << row << " col " << col << ": ";
+    os << row << " " << col << " ";
     if (magic.has_value()) {
         os << "0x" << std::hex << magic.value() << '\n';
     } else {
@@ -31,18 +33,25 @@ void print_if_has_value(std::ostream& os, size_t row, size_t col, std::optional<
 }
 
 int main() {
-    MagicFinder mf(99);
+    constexpr int seed = 97;
+    MagicFinder mf(seed);
+
+    auto rfile = std::ofstream("../data/rook_magic" + std::to_string(seed) + ".txt");
+    if (!rfile.good()) throw std::runtime_error("Can't create rook magic file");
 
     std::cout << "Rook magic\n";
     for_each_square([&mf](Size row, Size col) {
         auto magic = mf.find_rook_magic({row, col});
-        print_if_has_value(std::cout, row, col, magic);
+        print_if_has_value(rfile, row, col, magic);
     });
+
+    auto bfile = std::ofstream("../data/bishop_magic" + std::to_string(seed) + ".txt");
+    if (!bfile.good()) throw std::runtime_error("Can't create bishop magic file");
 
     std::cout << "\nBishop magic\n";
     for_each_square([&mf](Size row, Size col) {
         auto magic = mf.find_bishop_magic({row, col});
-        print_if_has_value(std::cout, row, col, magic);
+        print_if_has_value(bfile, row, col, magic);
     });
 
     return 0;
