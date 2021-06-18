@@ -7,7 +7,6 @@ module;
 #include <optional>
 #include <numeric>
 #include <functional>
-#include <iostream>
 
 import definitions;
 export module magicfinder;
@@ -18,7 +17,7 @@ using def::BOARD_SIZE;
 using def::Size;
 using def::valid_index;
 
-constexpr bool simple_maks = true;
+constexpr bool simple_maks = false;
 
 export namespace findmagic {
 
@@ -64,10 +63,10 @@ Bitboard bishop_mask(Square s) {
         });
     };
 
-    updater(s.top_right_neibs());
-    updater(s.top_left_neibs());
-    updater(s.bottom_left_neibs());
-    updater(s.bottom_right_neibs());
+    updater(s.rtneibs());
+    updater(s.ltneibs());
+    updater(s.lbneibs());
+    updater(s.rbneibs());
 
     return result;
 }
@@ -82,10 +81,10 @@ Bitboard rook_mask(Square s) {
         });
     };
 
-    updater(s.left_neibs());
-    updater(s.right_neibs());
-    updater(s.top_neibs());
-    updater(s.bottom_neibs());
+    updater(s.lneibs());
+    updater(s.rneibs());
+    updater(s.tneibs());
+    updater(s.bneibs());
 
     return result;
 }
@@ -155,10 +154,10 @@ Bitboard rook_attacks(Square s, Bitboard block) {
         }
     };
 
-    updater(s.left_neibs());
-    updater(s.right_neibs());
-    updater(s.top_neibs());
-    updater(s.bottom_neibs());
+    updater(s.lneibs());
+    updater(s.rneibs());
+    updater(s.tneibs());
+    updater(s.bneibs());
 
     return result;
 }
@@ -174,10 +173,10 @@ Bitboard bishop_attacks(Square s, Bitboard block) {
         }
     };
 
-    updater(s.top_right_neibs());
-    updater(s.top_left_neibs());
-    updater(s.bottom_left_neibs());
-    updater(s.bottom_right_neibs());
+    updater(s.rtneibs());
+    updater(s.ltneibs());
+    updater(s.lbneibs());
+    updater(s.rbneibs());
     
     return result;
 }
