@@ -4,7 +4,6 @@ module;
 #include <array>
 #include <vector>
 #include <algorithm>
-#include <optional>
 #include <numeric>
 #include <functional>
 
@@ -159,7 +158,7 @@ class MagicFinder {
 
     using BitboardTransformer = std::function<Bitboard(Bitboard)>;
 
-    std::optional<Bitboard> find_magic(Bitboard mask, BitboardTransformer fcn) {
+    Bitboard find_magic(Bitboard mask, BitboardTransformer fcn) {
         const size_t nones = count_ones(mask);
         const size_t size = (1 << nones);
 
@@ -191,18 +190,18 @@ class MagicFinder {
             if (success) return magic;
         }
 
-        return std::nullopt;
+        return 0;
     }
 
  public:
     MagicFinder() : m_rndm_bb(std::random_device("mt19937")()) {}
     MagicFinder(size_t seed) : m_rndm_bb(seed) {}
 
-    std::optional<Bitboard> find_rook_magic(Square s) {
+    Bitboard find_rook_magic(Square s) {
         return find_magic(rook_mask(s), [s](Bitboard x) {return rook_attacks(s, x);});
     }
 
-    std::optional<Bitboard> find_bishop_magic(Square s) {
+    Bitboard find_bishop_magic(Square s) {
         return find_magic(bishop_mask(s), [s](Bitboard x) {return bishop_attacks(s, x);});
     }
 };
