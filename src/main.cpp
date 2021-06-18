@@ -3,7 +3,6 @@
 #include <functional>
 #include <optional>
 #include <fstream>
-#include <sstream>
 
 import definitions;
 import magicfinder;
@@ -48,9 +47,6 @@ void print_if_has_value(std::ostream& os, size_t idx, std::optional<Bitboard> ma
 int main() {
     constexpr int seed = 96;
     MagicFinder mf(seed);
-
-    // std::ostringstream os;
-    // os << "../data/rook_magic" << seed << ".txt";
 
     auto rfile = std::ofstream("../data/rook_magic.txt", std::ios::out);
     if (!rfile.good()) throw std::runtime_error("Can't create rook magic file");

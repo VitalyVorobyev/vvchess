@@ -17,42 +17,10 @@ using def::BOARD_SIZE;
 using def::Size;
 using def::valid_index;
 
-constexpr bool simple_maks = false;
-
 export namespace findmagic {
 
 bool internal_colrow(Size row) {return row > 0 && row < BOARD_SIZE - 1;}
 bool internal_colrow(Size row, Size col) {return internal_colrow(row) && internal_colrow(col);}
-
-Bitboard bishop_mask_simple(Square s) {
-    Bitboard result(0);
-
-    for (Size row = s.row() + 1, col = s.col() + 1, index = s.index() + BOARD_SIZE + 1; internal_colrow(row, col); ++row, ++col, index += BOARD_SIZE + 1)
-        result |= (Bitboard(1) << index);
-    for (Size row = s.row() + 1, col = s.col() - 1, index = s.index() + BOARD_SIZE - 1; internal_colrow(row, col); ++row, --col, index += BOARD_SIZE - 1)
-        result |= (Bitboard(1) << index);
-    for (Size row = s.row() - 1, col = s.col() + 1, index = s.index() - BOARD_SIZE + 1; internal_colrow(row, col); --row, ++col, index -= BOARD_SIZE - 1)
-        result |= (Bitboard(1) << index);
-    for (Size row = s.row() - 1, col = s.col() - 1, index = s.index() - BOARD_SIZE - 1; internal_colrow(row, col); --row, --col, index -= BOARD_SIZE + 1)
-        result |= (Bitboard(1) << index);
-
-    return result;
-}
-
-Bitboard rook_mask_simple(Square s) {
-    Bitboard result(0);
-
-    for (Size row = s.row() - 1, index = s.index() - BOARD_SIZE; internal_colrow(row); --row, index -= BOARD_SIZE)
-        result |= (Bitboard(1) << index);
-    for (Size row = s.row() + 1, index = s.index() + BOARD_SIZE; internal_colrow(row); ++row, index += BOARD_SIZE)
-        result |= (Bitboard(1) << index);
-    for (Size col = s.col() - 1, index = s.index() - 1; internal_colrow(col); --col, --index)
-        result |= (Bitboard(1) << index);
-    for (Size col = s.col() + 1, index = s.index() + 1; internal_colrow(col); ++col, ++index)
-        result |= (Bitboard(1) << index);
-
-    return result;
-}
 
 Bitboard bishop_mask(Square s) {
     Bitboard result(0);
@@ -85,60 +53,6 @@ Bitboard rook_mask(Square s) {
     updater(s.rneibs());
     updater(s.tneibs());
     updater(s.bneibs());
-
-    return result;
-}
-
-Bitboard bishop_attacks_simple(Square s, Bitboard block) {
-    Bitboard result(0);
-
-    for (Size row = s.row() + 1, col = s.col() + 1, index = s.index() + BOARD_SIZE + 1; valid_index(row, col); ++row, ++col, index += BOARD_SIZE + 1){
-        Bitboard bb = Bitboard(1) << index;
-        result |= bb;
-        if (block & bb) break;
-    }
-    for (Size row = s.row() + 1, col = s.col() - 1, index = s.index() + BOARD_SIZE - 1; valid_index(row, col); ++row, --col, index += BOARD_SIZE - 1){
-        Bitboard bb = Bitboard(1) << index;
-        result |= bb;
-        if (block & bb) break;
-    }
-    for (Size row = s.row() - 1, col = s.col() + 1, index = s.index() - BOARD_SIZE + 1; valid_index(row, col); --row, ++col, index -= BOARD_SIZE - 1){
-        Bitboard bb = Bitboard(1) << index;
-        result |= bb;
-        if (block & bb) break;
-    }
-    for (Size row = s.row() - 1, col = s.col() - 1, index = s.index() - BOARD_SIZE - 1; valid_index(row, col); --row, --col, index -= BOARD_SIZE + 1){
-        Bitboard bb = Bitboard(1) << index;
-        result |= bb;
-        if (block & bb) break;
-    }
-
-    return result;
-}
-
-Bitboard rook_attacks_simple(Square s, Bitboard block) {
-    Bitboard result = 0;
-
-    for (Size row = s.row() - 1, index = s.index() - BOARD_SIZE; valid_index(row); --row, index -= BOARD_SIZE) {
-        Bitboard bb = Bitboard(1) << index;
-        result |= bb;
-        if (block & bb) break;
-    }
-    for (Size row = s.row() + 1, index = s.index() + BOARD_SIZE; valid_index(row); ++row, index += BOARD_SIZE) {
-        Bitboard bb = Bitboard(1) << index;
-        result |= bb;
-        if (block & bb) break;
-    }
-    for (Size col = s.col() - 1, index = s.index() - 1; valid_index(col); --col, --index) {
-        Bitboard bb = Bitboard(1) << index;
-        result |= bb;
-        if (block & bb) break;
-    }
-    for (Size col = s.col() + 1, index = s.index() + 1; valid_index(col); ++col, ++index) {
-        Bitboard bb = Bitboard(1) << index;
-        result |= bb;
-        if (block & bb) break;
-    }
 
     return result;
 }
@@ -285,14 +199,10 @@ class MagicFinder {
     MagicFinder(size_t seed) : m_rndm_bb(seed) {}
 
     std::optional<Bitboard> find_rook_magic(Square s) {
-        if (simple_maks)
-            return find_magic(rook_mask_simple(s), [s](Bitboard x) {return rook_attacks_simple(s, x);});
         return find_magic(rook_mask(s), [s](Bitboard x) {return rook_attacks(s, x);});
     }
 
     std::optional<Bitboard> find_bishop_magic(Square s) {
-        if (simple_maks)
-            return find_magic(bishop_mask_simple(s), [s](Bitboard x) {return bishop_attacks_simple(s, x);});
         return find_magic(bishop_mask(s), [s](Bitboard x) {return bishop_attacks(s, x);});
     }
 };
