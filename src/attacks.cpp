@@ -42,8 +42,8 @@ BBArray read_magic(const std::string& path) {
     auto ifile = std::ifstream(path, std::ios::in);
     if (!ifile.good()) throw std::runtime_error("");
 
-    Bitboard bb;
-    auto gen = [&ifile, &bb]() {
+    auto gen = [&ifile]() {
+        static Bitboard bb;
         ifile >> std::hex >> bb;
         return bb;
     };
@@ -61,13 +61,28 @@ class MagicTables {
     MagicArray m_rmagic;
 
     void init_rook_magic() {
-        // auto rmagic = read_magic(magic_path + m_rmagic_file);
+        auto rmagic = read_magic(magic_path + m_rmagic_file);
+        for (Size index = 0; index < TOTAL_SQUARES; ++index) {
+            MagicForSquare& mfsq = m_rmagic[index];
 
+            mfsq.magic = rmagic[index];
+            mfsq.mask = bbt::rook_mask({index});
+            auto [blockers, bits] = bbt::all_blockers(mfsq.mask);
+            mfsq.shift = TOTAL_SQUARES - bits;
+
+            mfsq.attacks.resize(blockers.size());
+            std::for_each(blockers.begin(), blockers.end(), [&mfsq, index](Bitboard bb) {
+                mfsq.attacks[bbt::magic_trick(bb, mfsq.magic, mfsq.shift)] =
+                    bbt::rook_attacks({index}, bb);
+            });
+        }
     }
 
     static std::unique_ptr<MagicTables> m_instance;
 
     MagicTables() {
+        init_rook_magic();
+
         auto bmagic = read_magic(magic_path + m_bmagic_file);
         auto rmagic = read_magic(magic_path + m_rmagic_file);
 
@@ -107,6 +122,9 @@ Bitboard bSinglePush(Bitboard powns, Bitboard empty) {
 Bitboard bDoublePush(Bitboard powns, Bitboard empty) {
     return pushBot(wSinglePush(powns, empty)) & empty & row5;
 }
+
+// Rook
+
 
 // Bishop
 // Bitboard bishopAttacks(Bitboard occ, Square sq) {

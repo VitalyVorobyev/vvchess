@@ -4,7 +4,6 @@ module;
 #include <array>
 #include <vector>
 #include <algorithm>
-#include <numeric>
 
 import definitions;
 
@@ -132,21 +131,17 @@ Bitboard index_to_bitboard(size_t index, Size bits, Bitboard b) {
 
 std::pair<std::vector<Bitboard>, Size> all_blockers(Bitboard mask) {
     const Size nones = count_ones(mask);
-    const size_t size = (1 << nones);
-
-    // Consider changing to std::array<Bitboard, 4096>
-    std::vector<size_t> seed(size);
-    std::iota(seed.begin(), seed.end(), 0);
-    std::vector<Bitboard> blockers(size);
-
-    std::transform(seed.begin(), seed.end(), blockers.begin(),
-        [nones, mask](size_t x) {return index_to_bitboard(x, nones, mask);});
-
+    std::vector<Bitboard> blockers(1 << nones);
+    std::generate(blockers.begin(), blockers.end(), [nones, mask]() {
+        static size_t idx = 0;
+        return index_to_bitboard(idx++, nones, mask);
+    });
+    
     return {blockers, nones};
 }
 
-size_t magic_trick(Bitboard b, Bitboard magic, int bits) {
-    return static_cast<size_t>((b * magic) >> (64 - bits));
+size_t magic_trick(Bitboard b, Bitboard magic, Size shift) {
+    return static_cast<size_t>((b * magic) >> shift);
 }
 
 }  // namespace bbt

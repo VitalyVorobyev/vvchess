@@ -42,6 +42,7 @@ class MagicFinder {
 
     Bitboard find_magic(Bitboard mask, BitboardTransformer fcn) {
         auto [blockers, nones] = bbt::all_blockers(mask);
+        const Size shift = def::TOTAL_SQUARES - nones;
 
         std::vector<Bitboard> attacks(blockers.size());
         std::transform(blockers.begin(), blockers.end(), attacks.begin(), fcn);
@@ -54,7 +55,7 @@ class MagicFinder {
 
             bool success = true;
             for (size_t idx = 0; idx < attacks.size(); ++idx) {
-                size_t j = bbt::magic_trick(blockers[idx], magic, nones);
+                size_t j = bbt::magic_trick(blockers[idx], magic, shift);
                 if (used[j] == 0) used[j] = attacks[idx];
                 else if (used[j] != attacks[idx]) {
                     success = false;
