@@ -3,22 +3,22 @@ find_package(GTest REQUIRED)
 add_compile_options(-O0)
 
 add_executable(test_pop_first_one
-    ../src/definitions.cpp ../src/magicfinder.cpp
+    ../src/definitions.cpp ../src/bbtools.cpp
     test_pop_first_one.cpp
 )
 
 add_executable(test_count_ones
-    ../src/definitions.cpp ../src/magicfinder.cpp
+    ../src/definitions.cpp ../src/bbtools.cpp
     test_count_ones.cpp
 )
 
 add_executable(test_bishop_mask
-    ../src/definitions.cpp ../src/magicfinder.cpp
+    ../src/definitions.cpp ../src/bbtools.cpp
     test_bishop_mask.cpp
 )
 
 add_executable(test_rook_mask
-    ../src/definitions.cpp ../src/magicfinder.cpp
+    ../src/definitions.cpp ../src/bbtools.cpp
     test_rook_mask.cpp
 )
 

@@ -4,7 +4,6 @@
 #include <optional>
 #include <fstream>
 
-// import attacks;
 import definitions;
 import magicfinder;
 
@@ -33,8 +32,7 @@ int main() {
     std::cout << "Bishop magic\n";
     for_each_square([&mf, &bfile](Size idx) { bfile << mf.find_bishop_magic({idx}) << ' ';});
 
-    // const att::MagicTables& mt = att::MagicTables::instance();
-    // mt.do_nothing();
+    
 
     return 0;
 }

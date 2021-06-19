@@ -1,11 +1,11 @@
 #include "gtest/gtest.h"
 
 import definitions;
-import magicfinder;
+import bbtools;
 
 using def::Bitboard;
 using def::TOTAL_SQUARES;
-using findmagic::pop_first_bit;
+using bbt::pop_first_bit;
 
 TEST(PopFirstBit, OneBit) {
     for (size_t i = 0; i < TOTAL_SQUARES; ++i) {

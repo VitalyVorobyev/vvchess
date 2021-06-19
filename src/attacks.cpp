@@ -9,7 +9,7 @@ module;
 #include <iostream>
 
 import definitions;
-// import magicfinder;
+import bbtools;
 export module attacks;
 
 using def::Bitboard;
@@ -44,7 +44,7 @@ BBArray read_magic(const std::string& path) {
 
     Bitboard bb;
     auto gen = [&ifile, &bb]() {
-        ifile >> bb;
+        ifile >> std::hex >> bb;
         return bb;
     };
 
@@ -60,7 +60,10 @@ class MagicTables {
     MagicArray m_bmagic;
     MagicArray m_rmagic;
 
-    void init_rook_magic() {}
+    void init_rook_magic() {
+        // auto rmagic = read_magic(magic_path + m_rmagic_file);
+
+    }
 
     static std::unique_ptr<MagicTables> m_instance;
 
@@ -68,6 +71,7 @@ class MagicTables {
         auto bmagic = read_magic(magic_path + m_bmagic_file);
         auto rmagic = read_magic(magic_path + m_rmagic_file);
 
+        std::cout << std::hex;
         for (size_t i = 0; i < 10; ++i) {
             std::cout << bmagic[i] << " " << rmagic[i] << std::endl;
         }

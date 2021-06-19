@@ -1,11 +1,12 @@
 #include "gtest/gtest.h"
 #include <array>
+
 import definitions;
-import magicfinder;
+import bbtools;
 
 using def::Bitboard;
 using def::TOTAL_SQUARES;
-using findmagic::count_ones;
+using bbt::count_ones;
 
 TEST(CountOnes, OneBit) {
     for (size_t i = 0; i < TOTAL_SQUARES; ++i) {

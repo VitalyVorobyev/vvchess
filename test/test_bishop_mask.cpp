@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
 
 import definitions;
-import magicfinder;
+import bbtools;
 
 using def::Bitboard;
-using findmagic::bishop_mask;
+using bbt::bishop_mask;
 
 TEST(BishopMask, D4) {ASSERT_EQ(Bitboard(0x22140014224000), bishop_mask({4, 3}));}
 TEST(BishopMask, E4) {ASSERT_EQ(Bitboard(0x44280028440200), bishop_mask({4, 4}));}

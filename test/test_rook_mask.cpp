@@ -1,10 +1,10 @@
 #include "gtest/gtest.h"
 
 import definitions;
-import magicfinder;
+import bbtools;
 
 using def::Bitboard;
-using findmagic::rook_mask;
+using bbt::rook_mask;
 
 TEST(RookMask, D4) {ASSERT_EQ(Bitboard(   0x8087608080800), rook_mask({4, 3}));}
 TEST(RookMask, E4) {ASSERT_EQ(Bitboard(  0x10106e10101000), rook_mask({4, 4}));}
