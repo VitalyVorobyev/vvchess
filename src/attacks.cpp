@@ -32,6 +32,10 @@ struct MagicForSquare {
     Bitboard mask;
     Bitboard magic;
     Size shift;
+
+    Bitboard apply(Bitboard occ) const {
+        return attacks[((occ & mask) * magic) >> shift];
+    }
 };
 
 using MagicArray = std::array<MagicForSquare, TOTAL_SQUARES>;
@@ -69,10 +73,15 @@ class MagicTables {
             mfsq.mask = bbt::rook_mask({index});
             auto [blockers, bits] = bbt::all_blockers(mfsq.mask);
             mfsq.shift = TOTAL_SQUARES - bits;
+            
+            std::cout << std::dec << index 
+                    //   << " " << bits
+                    //   << " " << mfsq.shift
+                      << std::endl;
 
             mfsq.attacks.resize(blockers.size());
             std::for_each(blockers.begin(), blockers.end(), [&mfsq, index](Bitboard bb) {
-                mfsq.attacks[bbt::magic_trick(bb, mfsq.magic, mfsq.shift)] =
+                mfsq.attacks[bbt::magic_hash(bb, mfsq.magic, mfsq.shift)] =
                     bbt::rook_attacks({index}, bb);
             });
         }
@@ -82,14 +91,6 @@ class MagicTables {
 
     MagicTables() {
         init_rook_magic();
-
-        auto bmagic = read_magic(magic_path + m_bmagic_file);
-        auto rmagic = read_magic(magic_path + m_rmagic_file);
-
-        std::cout << std::hex;
-        for (size_t i = 0; i < 10; ++i) {
-            std::cout << bmagic[i] << " " << rmagic[i] << std::endl;
-        }
     }
 
  public:
@@ -98,8 +99,21 @@ class MagicTables {
         return *m_instance;
     }
 
-    void do_nothing() const {}
+    const MagicForSquare& rmagic(Square sq) const {return m_rmagic[sq.index()];}
+    const MagicForSquare& bmagic(Square sq) const {return m_bmagic[sq.index()];}
 };
+
+Bitboard rookAttacks(Bitboard occ, Square sq) {
+    return MagicTables::instance().rmagic(sq).apply(occ);
+}
+
+Bitboard bishopAttacks(Bitboard occ, Square sq) {
+    return MagicTables::instance().bmagic(sq).apply(occ);
+}
+
+Bitboard queenAttacks(Bitboard occ, Square sq) {
+    return rookAttacks(occ, sq) | bishopAttacks(occ, sq);
+}
 
 std::unique_ptr<MagicTables> MagicTables::m_instance = nullptr;
 const std::string MagicTables::magic_path = "../data/";
@@ -122,9 +136,6 @@ Bitboard bSinglePush(Bitboard powns, Bitboard empty) {
 Bitboard bDoublePush(Bitboard powns, Bitboard empty) {
     return pushBot(wSinglePush(powns, empty)) & empty & row5;
 }
-
-// Rook
-
 
 // Bishop
 // Bitboard bishopAttacks(Bitboard occ, Square sq) {

@@ -55,7 +55,7 @@ class MagicFinder {
 
             bool success = true;
             for (size_t idx = 0; idx < attacks.size(); ++idx) {
-                size_t j = bbt::magic_trick(blockers[idx], magic, shift);
+                size_t j = bbt::magic_hash(blockers[idx], magic, shift);
                 if (used[j] == 0) used[j] = attacks[idx];
                 else if (used[j] != attacks[idx]) {
                     success = false;

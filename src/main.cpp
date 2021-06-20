@@ -5,7 +5,11 @@ import attacks;
 using att::MagicTables;
 
 int main() {
-    MagicTables::instance().do_nothing();
+    auto rm = MagicTables::instance().rmagic({0});
+
+    std::cout << std::hex
+        << rm.magic << '\n' << rm.mask << '\n' << rm.shift
+        << std::endl;
 
     return 0;
 }

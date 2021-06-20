@@ -140,7 +140,7 @@ std::pair<std::vector<Bitboard>, Size> all_blockers(Bitboard mask) {
     return {blockers, nones};
 }
 
-size_t magic_trick(Bitboard b, Bitboard magic, Size shift) {
+size_t magic_hash(Bitboard b, Bitboard magic, Size shift) {
     return static_cast<size_t>((b * magic) >> shift);
 }
 
